@@ -1,86 +1,100 @@
-# Dependencies
+# Data API Server
+
+A server for querying data through the Nekt API.
+
+## Dependencies
 
 Install dependencies using `uv`:
+
 ```bash
 uv sync
 ```
 
-# Run the application
+## Run the Application
 
-Run the applicationg using `uv`:
+Run the application using `uv`:
+
 ```bash
 uv run main.py
 ```
 
-# Using the application
+## Using the Application
 
-## Base URL
-All requests shoud be made against:
+### Base URL
+
+All requests should be made against:
+
 ```
 localhost:5001
 ```
 
-## Server status
+### Server Status
+
+Check if the server is running:
+
 ```bash
 curl --location 'localhost:5001/api/health'
 ```
 
-## Authentication
+### Authentication
 
-All requests, except `Server status` should include an header `x-api-key`, and the value is the API Key you created on your [Workspace Settings](https://app.nekt.ai/settings/api-keys).
+All requests, except `Server status`, should include a header `x-api-key`. The value should be the API Key you created in your [Workspace Settings](https://app.nekt.ai/settings/api-keys).
 
-
-
-## Create queries
+### Create Queries
 
 To create queries, use the endpoint:
+
 ```
 POST localhost:5001/api/queries
 ```
 
 You can query your data using two different approaches:
-* Using layer and table names;
-* Using a SQL query.
+* Using layer and table names
+* Using a SQL query
 
-Both approaches will initialize the Explorer application on your cloud provider (configured at Nekt), and return a `query_slug`, that will be required to execute the query and fetch the results.
+Both approaches will initialize the Explorer application on your cloud provider (configured at Nekt) and return a `query_slug`, which is required to execute the query and fetch the results.
 
-### Using layer and table names:
+#### Using Layer and Table Names:
+
 ```bash
 curl --location 'localhost:5001/api/queries' \
 --header 'Content-Type: application/json' \
---header 'x-api-key: *****' \
+--header 'x-api-key: YOUR_API_KEY' \
 --data '{
     "layer": "layer_name",
     "table": "table_name"
 }'
 ```
+
 > [!TIP]
-> This endpoint also supports `limit`, which can speed up query execution and save costs for large tables if you are just exploring the data:
+> This endpoint also supports the `limit` parameter, which can speed up query execution and save costs for large tables when you're exploring data:
+
 ```bash
 curl --location 'localhost:5001/api/queries' \
 --header 'Content-Type: application/json' \
---header 'x-api-key: *****' \
+--header 'x-api-key: YOUR_API_KEY' \
 --data '{
     "layer": "layer_name",
     "table": "table_name",
-    "limit": 100,
+    "limit": 100
 }'
 ```
 
-### Using SQL Query
+#### Using SQL Query:
 
 ```bash
 curl --location 'localhost:5001/api/queries' \
 --header 'Content-Type: application/json' \
---header 'x-api-key: *****' \
+--header 'x-api-key: YOUR_API_KEY' \
 --data '{
     "sql_query": "SELECT\n\t*\nFROM\n\t\"layer_name\".\"table_name\""
 }'
 ```
 
-### Get `query_slug` to execute the query
+#### Response with Query Slug
 
-Using this endpoint, will return an object that has a `query_slug`, that will be needed to execute the query and get its results 
+Using this endpoint will return an object that has a `query_slug`. You'll need this to execute the query and get its results:
+
 ```json
 {
     "message": "Query created successfully",
@@ -90,16 +104,18 @@ Using this endpoint, will return an object that has a `query_slug`, that will be
 }
 ```
 
-## Execute query and fetch results
+### Execute Query and Fetch Results
 
-To fetch results, use the endpoint
+To fetch results, use the endpoint:
+
 ```bash
 curl --location 'localhost:5001/api/queries/explorer-query-8OSP/results?page_number=1' \
 --header 'Content-Type: application/json' \
---header 'x-api-key: *****'
+--header 'x-api-key: YOUR_API_KEY'
 ```
 
-This will return the result of your query as a list of json objects:
+This will return the result of your query as a list of JSON objects:
+
 ```json
 {
     "query_slug": "explorer-query-8OSP",
@@ -123,11 +139,12 @@ This will return the result of your query as a list of json objects:
 }
 ```
 
-This endpoint has a page size of 100 records, so if the `data` array has 100 records, you can try fetching the next page, until the next page results has either less than 100 records or is empty:
+This endpoint has a page size of 100 records. If the `data` array contains 100 records, you can fetch the next page by incrementing the `page_number` parameter. Continue fetching pages until a response has fewer than 100 records or an empty array:
+
 ```bash
 curl --location 'localhost:5001/api/queries/explorer-query-8OSP/results?page_number=2' \
 --header 'Content-Type: application/json' \
---header 'x-api-key: *****'
+--header 'x-api-key: YOUR_API_KEY'
 ```
 
 ```json
