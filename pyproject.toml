@@ -1,0 +1,12 @@
+[project]
+name = "data-api-server"
+version = "0.1.0"
+description = "Example of server to consume data from Netk Data API"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "flask>=3.1.1",
+    "pandas>=2.2.3",
+    "pyarrow>=20.0.0",
+    "requests>=2.32.3",
+]
